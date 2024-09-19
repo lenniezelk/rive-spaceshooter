@@ -22,6 +22,7 @@ export type Game = {
   renderer: WrappedRenderer;
   onKeyPress: (key: string) => void;
   onKeyRelease: (key: string) => void;
+  onMouseClick: (event: MouseEvent) => void;
   addBullet: (bullet: Bullet) => void;
   reset: () => void;
   vitals: Vitals;
@@ -133,6 +134,11 @@ export const createGame = ({
     },
     onKeyRelease(key: string) {
       this.pressedKeys.delete(key);
+    },
+    onMouseClick(event: MouseEvent) {
+      if (event.button === 0) {
+        this.player?.shoot();
+      }
     },
     addBullet(bullet: Bullet) {
       this.bullets.push(bullet);

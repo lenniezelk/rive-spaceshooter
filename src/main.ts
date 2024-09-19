@@ -40,8 +40,13 @@ const main = async () => {
     game.onKeyRelease(event.key);
   }
 
+  function onMouseClick(event: MouseEvent) {
+    game.player?.shoot();
+  }
+
   window.addEventListener('keydown', onKeyPress);
   window.addEventListener('keyup', onKeyRelease);
+  window.addEventListener('click', onMouseClick);
 
   const game = createGame({
     renderer,
