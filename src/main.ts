@@ -1,4 +1,4 @@
-import { createGame } from './game';
+import { createGame, Game } from './game';
 import RiveCanvas from '@rive-app/canvas-advanced-single';
 import './style.css';
 import { getArtboardAndStateMachine, getFile } from './utils';
@@ -12,6 +12,7 @@ const main = async () => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const renderer = rive.makeRenderer(canvas);
   const file = await getFile(rive, '/spaceshooter.riv');
+  let game: Game | undefined;
 
   const windowSize = createVector();
 
@@ -26,6 +27,8 @@ const main = async () => {
 
     windowSize.x = canvas.width;
     windowSize.y = canvas.height;
+
+    game?.onResize(windowSize);
   }
 
   onWindowResize();
@@ -33,22 +36,22 @@ const main = async () => {
   window.addEventListener('resize', onWindowResize);
 
   function onKeyPress(event: KeyboardEvent) {
-    game.onKeyPress(event.key);
+    game?.onKeyPress(event.key);
   }
 
   function onKeyRelease(event: KeyboardEvent) {
-    game.onKeyRelease(event.key);
+    game?.onKeyRelease(event.key);
   }
 
   function onMouseClick(event: MouseEvent) {
-    game.player?.shoot();
+    game?.player?.shoot();
   }
 
   window.addEventListener('keydown', onKeyPress);
   window.addEventListener('keyup', onKeyRelease);
   window.addEventListener('click', onMouseClick);
 
-  const game = createGame({
+  game = createGame({
     renderer,
     canvasSize: windowSize,
     artboardStateMachineFetcher,

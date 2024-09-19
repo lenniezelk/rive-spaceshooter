@@ -26,6 +26,7 @@ export type Game = {
   addBullet: (bullet: Bullet) => void;
   reset: () => void;
   vitals: Vitals;
+  onResize: (canvasSize: Vector) => void;
 };
 
 export type GameProps = {
@@ -193,5 +194,8 @@ export const createGame = ({
       health: 100,
       lives: 3,
     }),
+    onResize(canvasSize: Vector) {
+      this.reset();
+    },
   };
 };
