@@ -6,10 +6,12 @@ import type {
 import { createVector, Vector } from './vector';
 import { createRect, Rect } from './rect';
 import { ArtboardAndStateMachineFetcher } from './utils';
+import { createTimer, Timer } from './timer';
 
 const speed = 500;
 
 export type Bullet = {
+  life: Timer;
   position: Vector;
   rotation: number;
   artboard: Artboard;
@@ -18,6 +20,7 @@ export type Bullet = {
   draw: (renderer: WrappedRenderer) => void;
   collider: () => Rect;
   delete: () => void;
+  canBeRemovedAfterOffscreen: () => boolean;
 };
 
 // Bullet factory
@@ -38,6 +41,8 @@ export const createBullet = (
     artboard,
     stateMachine,
     update(dt: number) {
+      this.life.tick(dt);
+
       const direction = createVector(
         Math.sin(this.rotation),
         Math.cos(this.rotation),
@@ -66,6 +71,10 @@ export const createBullet = (
     delete() {
       this.stateMachine.delete();
       this.artboard.delete();
+    },
+    life: createTimer(2000),
+    canBeRemovedAfterOffscreen() {
+      return this.life.isReady();
     },
   };
 };

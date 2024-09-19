@@ -71,6 +71,7 @@ export const createGame = ({
       const bulletsToRemove: Set<Bullet> = new Set();
       const meteorsToRemove: Set<Meteor> = new Set();
 
+      // Check for collisions
       for (const meteor of this.meteors) {
         if (this.player?.collider().intersects(meteor.collider())) {
           this.player.hit();
@@ -85,6 +86,39 @@ export const createGame = ({
           }
         }
       }
+
+      // Remove offscreen bullets and meteors
+      this.bullets.forEach((bullet) => {
+        if (
+          (bullet.position.x < 0 || bullet.position.x > canvasSize.x) &&
+          bullet.canBeRemovedAfterOffscreen()
+        ) {
+          bulletsToRemove.add(bullet);
+        }
+
+        if (
+          (bullet.position.y < 0 || bullet.position.y > canvasSize.y) &&
+          bullet.canBeRemovedAfterOffscreen()
+        ) {
+          bulletsToRemove.add(bullet);
+        }
+      });
+
+      this.meteors.forEach((meteor) => {
+        if (
+          (meteor.position.x < 0 || meteor.position.x > canvasSize.x) &&
+          meteor.canBeRemovedAfterOffscreen()
+        ) {
+          meteorsToRemove.add(meteor);
+        }
+
+        if (
+          (meteor.position.y < 0 || meteor.position.y > canvasSize.y) &&
+          meteor.canBeRemovedAfterOffscreen()
+        ) {
+          meteorsToRemove.add(meteor);
+        }
+      });
 
       if (this.player!.lives === 0) {
         this.reset();
@@ -151,6 +185,8 @@ export const createGame = ({
       this.bullets = [];
       previousBullets.forEach((bullet) => bullet.delete());
       this.player!.reset(canvasSize);
+      this.vitals.updateHealth(100);
+      this.vitals.updateLives(3);
     },
     vitals: createVitals({
       artboardStateMachineFetcher,

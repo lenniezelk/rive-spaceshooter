@@ -6,6 +6,7 @@ import type {
 import { createVector, type Vector } from './vector';
 import { createRect, Rect } from './rect';
 import type { ArtboardAndStateMachineFetcher } from './utils';
+import { createTimer, Timer } from './timer';
 
 export type Meteor = {
   position: Vector;
@@ -18,6 +19,8 @@ export type Meteor = {
   draw: (renderer: WrappedRenderer) => void;
   collider: () => Rect;
   delete: () => void;
+  life: Timer;
+  canBeRemovedAfterOffscreen: () => boolean;
 };
 
 // Meteor factory
@@ -62,7 +65,10 @@ export const createMeteor = (
     movement,
     rotation: 0,
     rotationSpeed,
+    life: createTimer(10000), // we don't really care about the end time really.
     update(dt: number) {
+      this.life.tick(dt);
+
       this.position.x += this.movement.x * dt;
       this.position.y += this.movement.y * dt;
       this.rotation += this.rotationSpeed * dt;
@@ -88,6 +94,9 @@ export const createMeteor = (
     delete() {
       this.stateMachine.delete();
       this.artboard.delete();
+    },
+    canBeRemovedAfterOffscreen() {
+      return this.life.isReady();
     },
   };
 };
